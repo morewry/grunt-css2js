@@ -39,25 +39,12 @@
 
                 var cssInJavascriptString = convertInJSString(contents);
 
-                grunt.file.write(file.dest, '(function () {\n' +
-                    '    // ' + fileNames + '\n' +
-                    '    var cssText = "" +\n' + cssInJavascriptString + ';\n' +
-                    '    // cssText end\n' +
-                    '\n' +
-                    '    var styleEl = document.createElement("style");\n' +
-                    '    document.getElementsByTagName("head")[0].appendChild(styleEl);\n' +
-                    '    if (styleEl.styleSheet) {\n' +
-                    '        if (!styleEl.styleSheet.disabled) {\n' +
-                    '            styleEl.styleSheet.cssText = cssText;\n' +
-                    '        }\n' +
-                    '    } else {\n' +
-                    '        try {\n' +
-                    '            styleEl.innerHTML = cssText\n' +
-                    '        } catch(e) {\n' +
-                    '            styleEl.innerText = cssText;\n' +
-                    '        }\n' +
-                    '    }\n' +
-                    '}());\n');
+                var moduleName = fileNames.replace(/([.]css)/gi, "");
+
+                grunt.file.write(file.dest, "" +
+                "angular.module(\"component."+ moduleName +".stylesheets\", [\"$templateCache\", function ($templateCache) {\r\n"+
+                "  $templateCache.put(\""+ fileNames +"\", "+ cssInJavascriptString +");\r\n"+
+                "}]);\r\n");
 
                 grunt.log.writeln('File "' + file.dest + '" created.');
 
